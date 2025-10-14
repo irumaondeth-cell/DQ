@@ -2,9 +2,14 @@ import { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
-import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { useEffect, useState } from 'react';
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { useFrameworkReady } from '@/hooks/useFrameworkReady';
+import { getOrCreateDeviceId } from '@/lib/supabase';
+import * as db from '@/lib/db';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text } from 'react-native';
 
 export default function RootLayout() {
   useFrameworkReady();
@@ -12,43 +17,21 @@ export default function RootLayout() {
   const [loadingAuth, setLoadingAuth] = useState(true);
 
   useEffect(() => {
-    let unsubscribe: (() => void) | undefined;
+    let unsub: (() => void) | undefined;
 
     async function init() {
-      if (!isSupabaseConfigured || !supabase) {
-        setLoadingAuth(false);
-        return;
-      }
-
-      const { data } = await supabase.auth.getSession();
-      setLoggedIn(Boolean(data.session));
+      const session = await db.getSession();
+      setLoggedIn(Boolean(session && session.session));
       setLoadingAuth(false);
 
-      const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-        setLoggedIn(Boolean(session));
+      unsub = db.onAuthStateChange((_event, session) => {
+        setLoggedIn(Boolean(session && session.session));
       });
-      unsubscribe = () => listener.subscription.unsubscribe();
     }
 
     init();
-    return () => {
-      unsubscribe?.();
-    };
+    return () => unsub && unsub();
   }, []);
-
-  if (!isSupabaseConfigured || !supabase) {
-    return (
-      <SafeAreaView>
-        <View style={{ padding: 16 }}>
-          <Text style={{ fontSize: 20, fontWeight: '600', marginBottom: 8 }}>Configuración requerida</Text>
-          <Text style={{ color: '#555' }}>
-            Para usar la app, configura las variables de entorno EXPO_PUBLIC_SUPABASE_URL y EXPO_PUBLIC_SUPABASE_ANON_KEY.
-          </Text>
-        </View>
-        <StatusBar style="auto" />
-      </SafeAreaView>
-    );
-  }
 
   if (loadingAuth) {
     return (
