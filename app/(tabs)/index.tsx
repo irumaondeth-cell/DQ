@@ -12,6 +12,7 @@ export default function InventoryScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [deviceId, setDeviceId] = useState<string>('');
+  const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -36,6 +37,12 @@ export default function InventoryScreen() {
       const id = await getOrCreateDeviceId();
       setDeviceId(id);
       await loadItems();
+      try {
+        const session = await db.getSession();
+        setIsAdmin(Boolean(session?.session?.user?.role === 'admin'));
+      } catch (e) {
+        setIsAdmin(false);
+      }
     } catch (error: any) {
       Alert.alert('Error', 'No se pudo inicializar la aplicación');
       setLoading(false);
@@ -121,9 +128,16 @@ export default function InventoryScreen() {
       <View style={styles.header}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <Text style={styles.title}>Mi Inventario</Text>
-          <TouchableOpacity onPress={async () => { try { await db.signOut(); } catch (e:any) { Alert.alert('Error', e.message); } }}>
-            <Text style={{ color: '#007AFF', fontWeight: '600' }}>Salir</Text>
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {isAdmin && (
+              <TouchableOpacity onPress={() => router.push('/admin')}>
+                <Text style={{ color: '#007AFF', fontWeight: '600', marginRight: 12 }}>Admin</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity onPress={async () => { try { await db.signOut(); } catch (e:any) { Alert.alert('Error', e.message); } }}>
+              <Text style={{ color: '#007AFF', fontWeight: '600' }}>Salir</Text>
+            </TouchableOpacity>
+          </View>
         </View>
         <View style={styles.searchContainer}>
           <Search size={20} color="#8E8E93" style={styles.searchIcon} />
