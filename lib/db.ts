@@ -16,7 +16,7 @@ export type InventoryItem = {
 };
 
 export type LocalUser = {
-  email: string;
+  username: string;
   password: string;
   role: 'admin' | 'user';
 };
@@ -49,7 +49,7 @@ async function ensureDefaultAdmin(): Promise<void> {
     const users = raw ? (JSON.parse(raw) as LocalUser[]) : [];
     const hasAdmin = users.some((u) => u.role === 'admin');
     if (!hasAdmin) {
-      const admin: LocalUser = { email: 'admin@local', password: '123456789', role: 'admin' };
+      const admin: LocalUser = { username: 'administrador', password: '123456789', role: 'admin' };
       users.push(admin);
       await AsyncStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
     }
@@ -76,7 +76,7 @@ export async function loadUsers(): Promise<LocalUser[]> {
   }
 }
 
-export async function createUserAdmin(email: string, password: string, role: 'admin' | 'user' = 'user') {
+export async function createUserAdmin(username: string, password: string, role: 'admin' | 'user' = 'user') {
   if (supabase) {
     // Replace with real Supabase user creation if desired
     throw new Error('Create user via Supabase not implemented');
@@ -85,8 +85,8 @@ export async function createUserAdmin(email: string, password: string, role: 'ad
   try {
     const raw = await AsyncStorage.getItem(LOCAL_USERS_KEY);
     const users = raw ? (JSON.parse(raw) as LocalUser[]) : [];
-    if (users.find((u) => u.email === email)) throw new Error('El usuario ya existe');
-    const newUser: LocalUser = { email, password, role };
+    if (users.find((u) => u.username === username)) throw new Error('El usuario ya existe');
+    const newUser: LocalUser = { username, password, role };
     users.push(newUser);
     await AsyncStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
   } catch (e: any) {
@@ -198,9 +198,9 @@ export async function findBySKU(sku: string): Promise<InventoryItem | null> {
 }
 
 // --- Auth emulation for local mode ---
-export async function signUp(email: string, password: string): Promise<void> {
+export async function signUp(username: string, password: string): Promise<void> {
   if (supabase) {
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error } = await supabase.auth.signUp({ email: username, password });
     if (error) throw error;
     return;
   }
@@ -208,17 +208,17 @@ export async function signUp(email: string, password: string): Promise<void> {
   try {
     const raw = await AsyncStorage.getItem(LOCAL_USERS_KEY);
     const users = raw ? (JSON.parse(raw) as LocalUser[]) : [];
-    if (users.find((u) => u.email === email)) throw new Error('El usuario ya existe');
-    users.push({ email, password, role: 'user' });
+    if (users.find((u) => u.username === username)) throw new Error('El usuario ya existe');
+    users.push({ username, password, role: 'user' });
     await AsyncStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
   } catch (e: any) {
     throw e;
   }
 }
 
-export async function signIn(email: string, password: string): Promise<void> {
+export async function signIn(username: string, password: string): Promise<void> {
   if (supabase) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({ email: username, password });
     if (error) throw error;
     return;
   }
@@ -227,10 +227,10 @@ export async function signIn(email: string, password: string): Promise<void> {
     await ensureDefaultAdmin();
     const raw = await AsyncStorage.getItem(LOCAL_USERS_KEY);
     const users = raw ? (JSON.parse(raw) as LocalUser[]) : [];
-    const found = users.find((u) => u.email === email && u.password === password);
+    const found = users.find((u) => u.username === username && u.password === password);
     if (!found) throw new Error('Credenciales inválidas');
-    await AsyncStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify({ user: { email: found.email, role: found.role } }));
-    notifyAuth('SIGNED_IN', { session: { user: { email: found.email, role: found.role } } });
+    await AsyncStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify({ user: { username: found.username, role: found.role } }));
+    notifyAuth('SIGNED_IN', { session: { user: { username: found.username, role: found.role } } });
   } catch (e: any) {
     throw e;
   }
