@@ -49,25 +49,18 @@ export default function AddItemScreen() {
     try {
       const deviceId = await getOrCreateDeviceId();
 
-      if (!supabase) {
-        Alert.alert('Configuración requerida', 'Conecta Supabase para guardar items.');
-        return;
-      }
+      const newItem = await db.insertItem({
+        qr_code: skuCode,
+        name: name.trim(),
+        description: description.trim(),
+        category: category.trim(),
+        location: location.trim(),
+        quantity: parseInt(quantity) || 1,
+        photo_url: photoUri,
+        user_id: deviceId,
+      });
 
-      const { error } = await supabase
-        .from('inventory_items')
-        .insert({
-          qr_code: skuCode,
-          name: name.trim(),
-          description: description.trim(),
-          category: category.trim(),
-          location: location.trim(),
-          quantity: parseInt(quantity) || 1,
-          photo_url: photoUri,
-          user_id: deviceId,
-        });
-
-      if (error) throw error;
+      if (!newItem) throw new Error('No se pudo guardar el item');
 
       Alert.alert('Éxito', 'Item agregado correctamente', [
         {
