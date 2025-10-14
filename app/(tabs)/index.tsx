@@ -134,7 +134,12 @@ export default function InventoryScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Mi Inventario</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text style={styles.title}>Mi Inventario</Text>
+          <TouchableOpacity onPress={async () => { try { if (supabase) { await supabase.auth.signOut(); } else { Alert.alert('Configuración requerida', 'Conecta Supabase para cerrar sesión.'); } } catch (e:any) { Alert.alert('Error', e.message); } }}>
+            <Text style={{ color: '#007AFF', fontWeight: '600' }}>Salir</Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.searchContainer}>
           <Search size={20} color="#8E8E93" style={styles.searchIcon} />
           <TextInput
