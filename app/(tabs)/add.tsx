@@ -4,7 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { Camera, X, Check } from 'lucide-react-native';
 import QRCode from 'react-native-qrcode-svg';
-import { supabase, getOrCreateDeviceId } from '@/lib/supabase';
+import { getOrCreateDeviceId } from '@/lib/supabase';
+import * as db from '@/lib/db';
 import { useRouter } from 'expo-router';
 
 export default function AddItemScreen() {
