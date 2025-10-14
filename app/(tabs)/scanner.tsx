@@ -18,6 +18,11 @@ export default function ScannerScreen() {
     setShowCamera(false);
 
     try {
+      if (!supabase) {
+        Alert.alert('Configuración requerida', 'Conecta Supabase para escanear y buscar items.');
+        setScanned(false);
+        return;
+      }
       const { data: items, error } = await supabase
         .from('inventory_items')
         .select('*')
@@ -29,7 +34,7 @@ export default function ScannerScreen() {
       if (items) {
         setScannedItem(items);
       } else {
-        Alert.alert('No encontrado', 'No se encontró ningún item con este código QR');
+        Alert.alert('No encontrado', 'No se encontró ningún item con este SKU');
         setScanned(false);
       }
     } catch (error: any) {
@@ -88,7 +93,7 @@ export default function ScannerScreen() {
             <Text style={styles.resultName}>{scannedItem.name}</Text>
 
             <View style={styles.resultRow}>
-              <Text style={styles.resultLabel}>Código QR:</Text>
+              <Text style={styles.resultLabel}>SKU:</Text>
               <Text style={styles.resultValue}>{scannedItem.qr_code}</Text>
             </View>
 
@@ -157,7 +162,7 @@ export default function ScannerScreen() {
               <View style={styles.overlaySide} />
             </View>
             <View style={styles.overlayBottom}>
-              <Text style={styles.instructionText}>Apunta al código QR</Text>
+              <Text style={styles.instructionText}>Apunta al código SKU/QR</Text>
               <TouchableOpacity style={styles.cancelButton} onPress={() => setShowCamera(false)}>
                 <Text style={styles.cancelButtonText}>Cancelar</Text>
               </TouchableOpacity>
@@ -171,14 +176,14 @@ export default function ScannerScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Escanear QR</Text>
+        <Text style={styles.title}>Escanear SKU</Text>
       </View>
 
       <View style={styles.startContainer}>
         <Package size={80} color="#007AFF" />
-        <Text style={styles.startTitle}>Escanear Código QR</Text>
+        <Text style={styles.startTitle}>Escanear Código SKU/QR</Text>
         <Text style={styles.startText}>
-          Escanea el código QR de un item para ver su información completa
+          Escanea el SKU (o QR del SKU) de un item para ver su información completa
         </Text>
         <TouchableOpacity style={styles.startButton} onPress={() => setShowCamera(true)}>
           <Text style={styles.startButtonText}>Iniciar Escaneo</Text>
