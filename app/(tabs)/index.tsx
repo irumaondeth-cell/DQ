@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, TextInput, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Search, Trash2 } from 'lucide-react-native';
-import { supabase, InventoryItem, getOrCreateDeviceId } from '@/lib/supabase';
+import { InventoryItem, getOrCreateDeviceId } from '@/lib/supabase';
+import * as db from '@/lib/db';
 import { useRouter } from 'expo-router';
 
 export default function InventoryScreen() {
