@@ -3,7 +3,8 @@ import { View, Text, StyleSheet, Alert, TouchableOpacity, ScrollView, Image } fr
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { X, Package } from 'lucide-react-native';
-import { supabase, InventoryItem } from '@/lib/supabase';
+import { InventoryItem } from '@/lib/supabase';
+import * as db from '@/lib/db';
 
 export default function ScannerScreen() {
   const [permission, requestPermission] = useCameraPermissions();
