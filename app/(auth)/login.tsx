@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { supabase } from '@/lib/supabase';
+import * as db from '@/lib/db';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -11,7 +11,7 @@ export default function LoginScreen() {
 
   async function handleAuth() {
     if (!supabase) {
-      Alert.alert('Configuración requerida', 'Conecta Supabase para iniciar sesión.');
+      Alert.alert('Configuración requerida', 'Conecta Supabase para iniciar sesi��n.');
       return;
     }
     if (!email || !password) {
