@@ -21,7 +21,7 @@ export default function AddItemScreen() {
   const cameraRef = useRef<CameraView>(null);
   const router = useRouter();
 
-  const qrCode = `INV-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  const skuCode = `SKU-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
   async function takePicture() {
     if (cameraRef.current) {
