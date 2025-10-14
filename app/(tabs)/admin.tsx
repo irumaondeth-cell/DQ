@@ -4,8 +4,8 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Alert } 
 import * as db from '@/lib/db';
 
 export default function AdminScreen() {
-  const [users, setUsers] = useState<Array<{ email: string; role: string }>>([]);
-  const [email, setEmail] = useState('');
+  const [users, setUsers] = useState<Array<{ username: string; role: string }>>([]);
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'admin' | 'user'>('user');
   const [loading, setLoading] = useState(false);
@@ -17,21 +17,21 @@ export default function AdminScreen() {
   async function loadUsers() {
     try {
       const u = await db.loadUsers();
-      setUsers(u.map((x) => ({ email: x.email, role: x.role })));
+      setUsers(u.map((x) => ({ username: x.username, role: x.role })));
     } catch (e:any) {
       Alert.alert('Error', e.message);
     }
   }
 
   async function handleCreate() {
-    if (!email || !password) {
-      Alert.alert('Error', 'Email y contraseña son requeridos');
+    if (!username || !password) {
+      Alert.alert('Error', 'Usuario y contraseña son requeridos');
       return;
     }
     setLoading(true);
     try {
-      await db.createUserAdmin(email.trim(), password, role);
-      setEmail('');
+      await db.createUserAdmin(username.trim(), password, role);
+      setUsername('');
       setPassword('');
       setRole('user');
       loadUsers();
@@ -43,9 +43,9 @@ export default function AdminScreen() {
     }
   }
 
-  const renderItem = ({ item }: { item: { email: string; role: string } }) => (
+  const renderItem = ({ item }: { item: { username: string; role: string } }) => (
     <View style={styles.userRow}>
-      <Text style={styles.userEmail}>{item.email}</Text>
+      <Text style={styles.userEmail}>{item.username}</Text>
       <Text style={styles.userRole}>{item.role}</Text>
     </View>
   );
@@ -55,7 +55,7 @@ export default function AdminScreen() {
       <View style={styles.card}>
         <Text style={styles.title}>Administrar Usuarios</Text>
         <Text style={styles.label}>Crear nuevo usuario</Text>
-        <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} placeholderTextColor="#8E8E93" />
+        <TextInput style={styles.input} placeholder="Usuario" value={username} onChangeText={setUsername} placeholderTextColor="#8E8E93" />
         <TextInput style={styles.input} placeholder="Contraseña" value={password} secureTextEntry onChangeText={setPassword} placeholderTextColor="#8E8E93" />
         <View style={{ flexDirection: 'row', marginTop: 8 }}>
           <TouchableOpacity style={[styles.roleBtn, role === 'user' && styles.roleBtnActive]} onPress={() => setRole('user')}>
@@ -70,7 +70,7 @@ export default function AdminScreen() {
         </TouchableOpacity>
 
         <Text style={[styles.label, { marginTop: 16 }]}>Usuarios existentes</Text>
-        <FlatList data={users} renderItem={renderItem} keyExtractor={(i) => i.email} />
+        <FlatList data={users} renderItem={renderItem} keyExtractor={(i) => i.username} />
       </View>
     </SafeAreaView>
   );
