@@ -48,10 +48,15 @@ export default function AddItemScreen() {
     try {
       const deviceId = await getOrCreateDeviceId();
 
+      if (!supabase) {
+        Alert.alert('Configuración requerida', 'Conecta Supabase para guardar items.');
+        return;
+      }
+
       const { error } = await supabase
         .from('inventory_items')
         .insert({
-          qr_code: qrCode,
+          qr_code: skuCode,
           name: name.trim(),
           description: description.trim(),
           category: category.trim(),
@@ -130,11 +135,11 @@ export default function AddItemScreen() {
         </View>
 
         <View style={styles.qrContainer}>
-          <Text style={styles.sectionTitle}>Código QR generado:</Text>
+          <Text style={styles.sectionTitle}>Código SKU generado:</Text>
           <View style={styles.qrCode}>
-            <QRCode value={qrCode} size={150} />
+            <QRCode value={skuCode} size={150} />
           </View>
-          <Text style={styles.qrText}>{qrCode}</Text>
+          <Text style={styles.qrText}>{skuCode}</Text>
         </View>
 
         <View style={styles.photoSection}>
