@@ -19,21 +19,10 @@ export default function ScannerScreen() {
     setShowCamera(false);
 
     try {
-      if (!supabase) {
-        Alert.alert('Configuración requerida', 'Conecta Supabase para escanear y buscar items.');
-        setScanned(false);
-        return;
-      }
-      const { data: items, error } = await supabase
-        .from('inventory_items')
-        .select('*')
-        .eq('qr_code', data)
-        .maybeSingle();
+      const item = await db.findBySKU(data);
 
-      if (error) throw error;
-
-      if (items) {
-        setScannedItem(items);
+      if (item) {
+        setScannedItem(item);
       } else {
         Alert.alert('No encontrado', 'No se encontró ningún item con este SKU');
         setScanned(false);
