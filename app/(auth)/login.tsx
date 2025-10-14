@@ -4,22 +4,22 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as db from '@/lib/db';
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<'login' | 'signup'>('login');
 
   async function handleAuth() {
-    if (!email || !password) {
-      Alert.alert('Error', 'Ingresa email y contraseña.');
+    if (!username || !password) {
+      Alert.alert('Error', 'Ingresa usuario y contraseña.');
       return;
     }
     setLoading(true);
     try {
       if (mode === 'login') {
-        await db.signIn(email, password);
+        await db.signIn(username, password);
       } else {
-        await db.signUp(email, password);
+        await db.signUp(username, password);
         Alert.alert('Cuenta creada', 'Cuenta creada en modo local.');
       }
     } catch (e: any) {
@@ -35,11 +35,10 @@ export default function LoginScreen() {
         <Text style={styles.title}>{mode === 'login' ? 'Iniciar sesión' : 'Crear cuenta'}</Text>
         <TextInput
           style={styles.input}
-          placeholder="Email"
-          keyboardType="email-address"
+          placeholder="Usuario"
           autoCapitalize="none"
-          value={email}
-          onChangeText={setEmail}
+          value={username}
+          onChangeText={setUsername}
           placeholderTextColor="#8E8E93"
         />
         <TextInput
