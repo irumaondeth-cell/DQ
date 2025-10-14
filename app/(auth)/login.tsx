@@ -10,10 +10,6 @@ export default function LoginScreen() {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
 
   async function handleAuth() {
-    if (!supabase) {
-      Alert.alert('Configuración requerida', 'Conecta Supabase para iniciar sesi��n.');
-      return;
-    }
     if (!email || !password) {
       Alert.alert('Error', 'Ingresa email y contraseña.');
       return;
@@ -21,12 +17,10 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       if (mode === 'login') {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        await db.signIn(email, password);
       } else {
-        const { error } = await supabase.auth.signUp({ email, password });
-        if (error) throw error;
-        Alert.alert('Cuenta creada', 'Revisa tu correo si se requiere confirmación.');
+        await db.signUp(email, password);
+        Alert.alert('Cuenta creada', 'Cuenta creada en modo local.');
       }
     } catch (e: any) {
       Alert.alert('Error', e.message);
