@@ -50,15 +50,9 @@ export default function InventoryScreen() {
         setFilteredItems([]);
         return;
       }
-      const { data, error } = await supabase
-        .from('inventory_items')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      setItems(data || []);
-      setFilteredItems(data || []);
+      const items = await db.loadItems();
+      setItems(items || []);
+      setFilteredItems(items || []);
     } catch (error: any) {
       Alert.alert('Error', error.message);
     } finally {
@@ -77,17 +71,7 @@ export default function InventoryScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              if (!supabase) {
-                Alert.alert('Configuración requerida', 'Conecta Supabase para eliminar items.');
-                return;
-              }
-              const { error } = await supabase
-                .from('inventory_items')
-                .delete()
-                .eq('id', id);
-
-              if (error) throw error;
-
+              await db.deleteItem(id);
               loadItems();
             } catch (error: any) {
               Alert.alert('Error', error.message);
@@ -137,7 +121,7 @@ export default function InventoryScreen() {
       <View style={styles.header}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <Text style={styles.title}>Mi Inventario</Text>
-          <TouchableOpacity onPress={async () => { try { if (supabase) { await supabase.auth.signOut(); } else { Alert.alert('Configuración requerida', 'Conecta Supabase para cerrar sesión.'); } } catch (e:any) { Alert.alert('Error', e.message); } }}>
+          <TouchableOpacity onPress={async () => { try { await db.signOut(); } catch (e:any) { Alert.alert('Error', e.message); } }}>
             <Text style={{ color: '#007AFF', fontWeight: '600' }}>Salir</Text>
           </TouchableOpacity>
         </View>
