@@ -43,6 +43,12 @@ export default function InventoryScreen() {
 
   async function loadItems() {
     try {
+      if (!supabase) {
+        Alert.alert('Configuración requerida', 'Conecta Supabase para cargar el inventario.');
+        setItems([]);
+        setFilteredItems([]);
+        return;
+      }
       const { data, error } = await supabase
         .from('inventory_items')
         .select('*')
@@ -70,6 +76,10 @@ export default function InventoryScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
+              if (!supabase) {
+                Alert.alert('Configuración requerida', 'Conecta Supabase para eliminar items.');
+                return;
+              }
               const { error } = await supabase
                 .from('inventory_items')
                 .delete()
@@ -95,7 +105,7 @@ export default function InventoryScreen() {
         )}
         <View style={styles.itemInfo}>
           <Text style={styles.itemName}>{item.name}</Text>
-          <Text style={styles.itemDetail}>QR: {item.qr_code}</Text>
+          <Text style={styles.itemDetail}>SKU: {item.qr_code}</Text>
           {item.category && (
             <Text style={styles.itemDetail}>Categoría: {item.category}</Text>
           )}
@@ -129,7 +139,7 @@ export default function InventoryScreen() {
           <Search size={20} color="#8E8E93" style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Buscar por nombre, categoría o QR..."
+            placeholder="Buscar por nombre, categoría o SKU..."
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholderTextColor="#8E8E93"
