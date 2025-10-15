@@ -5,7 +5,7 @@ import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { getOrCreateDeviceId } from '@/lib/supabase';
 import * as db from '@/lib/db';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, Text } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 
 export default function RootLayout() {
   useFrameworkReady();
