@@ -223,7 +223,8 @@ export async function signUp(username: string, password: string): Promise<void> 
     const raw = await AsyncStorage.getItem(LOCAL_USERS_KEY);
     const users = raw ? (JSON.parse(raw) as LocalUser[]) : [];
     if (users.find((u) => u.username === username)) throw new Error('El usuario ya existe');
-    users.push({ username, password, role: 'user' });
+    const hashed = await bcrypt.hash(password, 10);
+    users.push({ username, password: hashed, role: 'user' });
     await AsyncStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
   } catch (e: any) {
     throw e;
@@ -241,8 +242,10 @@ export async function signIn(username: string, password: string): Promise<void> 
     await ensureDefaultAdmin();
     const raw = await AsyncStorage.getItem(LOCAL_USERS_KEY);
     const users = raw ? (JSON.parse(raw) as LocalUser[]) : [];
-    const found = users.find((u) => u.username === username && u.password === password);
+    const found = users.find((u) => u.username === username);
     if (!found) throw new Error('Credenciales inválidas');
+    const match = await bcrypt.compare(password, found.password);
+    if (!match) throw new Error('Credenciales inválidas');
     await AsyncStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify({ user: { username: found.username, role: found.role } }));
     notifyAuth('SIGNED_IN', { session: { user: { username: found.username, role: found.role } } });
   } catch (e: any) {
