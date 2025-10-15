@@ -1,5 +1,13 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert, TouchableOpacity, ScrollView, Image } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { X, Package } from 'lucide-react-native';
@@ -24,7 +32,10 @@ export default function ScannerScreen() {
       if (item) {
         setScannedItem(item);
       } else {
-        Alert.alert('No encontrado', 'No se encontró ningún ítem con este código');
+        Alert.alert(
+          'No encontrado',
+          'No se encontró ningún ítem con este código',
+        );
         setScanned(false);
       }
     } catch (error: any) {
@@ -56,7 +67,10 @@ export default function ScannerScreen() {
           <Text style={styles.permissionText}>
             Necesitamos acceso a la cámara para escanear códigos QR
           </Text>
-          <TouchableOpacity style={styles.permissionButton} onPress={requestPermission}>
+          <TouchableOpacity
+            style={styles.permissionButton}
+            onPress={requestPermission}
+          >
             <Text style={styles.permissionButtonText}>Conceder Permiso</Text>
           </TouchableOpacity>
         </View>
@@ -76,7 +90,10 @@ export default function ScannerScreen() {
 
         <ScrollView contentContainerStyle={styles.resultContent}>
           {scannedItem.photo_url && (
-            <Image source={{ uri: scannedItem.photo_url }} style={styles.resultImage} />
+            <Image
+              source={{ uri: scannedItem.photo_url }}
+              style={styles.resultImage}
+            />
           )}
 
           <View style={styles.resultCard}>
@@ -90,7 +107,9 @@ export default function ScannerScreen() {
             {scannedItem.description && (
               <View style={styles.resultRow}>
                 <Text style={styles.resultLabel}>Descripción:</Text>
-                <Text style={styles.resultValue}>{scannedItem.description}</Text>
+                <Text style={styles.resultValue}>
+                  {scannedItem.description}
+                </Text>
               </View>
             )}
 
@@ -121,7 +140,10 @@ export default function ScannerScreen() {
             </View>
           </View>
 
-          <TouchableOpacity style={styles.scanAgainButton} onPress={resetScanner}>
+          <TouchableOpacity
+            style={styles.scanAgainButton}
+            onPress={resetScanner}
+          >
             <Text style={styles.scanAgainButtonText}>Escanear otro ítem</Text>
           </TouchableOpacity>
         </ScrollView>
@@ -138,7 +160,8 @@ export default function ScannerScreen() {
           barcodeScannerSettings={{
             barcodeTypes: ['qr'],
           }}
-          onBarcodeScanned={handleBarCodeScanned}>
+          onBarcodeScanned={handleBarCodeScanned}
+        >
           <View style={styles.overlay}>
             <View style={styles.overlayTop} />
             <View style={styles.overlayMiddle}>
@@ -152,8 +175,13 @@ export default function ScannerScreen() {
               <View style={styles.overlaySide} />
             </View>
             <View style={styles.overlayBottom}>
-              <Text style={styles.instructionText}>Apunta al código de inventario</Text>
-              <TouchableOpacity style={styles.cancelButton} onPress={() => setShowCamera(false)}>
+              <Text style={styles.instructionText}>
+                Apunta al código de inventario
+              </Text>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setShowCamera(false)}
+              >
                 <Text style={styles.cancelButtonText}>Cancelar</Text>
               </TouchableOpacity>
             </View>
@@ -173,9 +201,13 @@ export default function ScannerScreen() {
         <Package size={80} color="#E53935" />
         <Text style={styles.startTitle}>Escanear código de inventario</Text>
         <Text style={styles.startText}>
-          Escanea el código de inventario o su QR para ver la información del ítem
+          Escanea el código de inventario o su QR para ver la información del
+          ítem
         </Text>
-        <TouchableOpacity style={styles.startButton} onPress={() => setShowCamera(true)}>
+        <TouchableOpacity
+          style={styles.startButton}
+          onPress={() => setShowCamera(true)}
+        >
           <Text style={styles.startButtonText}>Iniciar Escaneo</Text>
         </TouchableOpacity>
       </View>

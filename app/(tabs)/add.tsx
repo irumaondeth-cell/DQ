@@ -1,5 +1,15 @@
 import { useState, useRef } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, Image, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  Image,
+  Platform,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { Camera, X, Check } from 'lucide-react-native';
@@ -95,8 +105,13 @@ export default function AddItemScreen() {
       return (
         <SafeAreaView style={styles.container}>
           <View style={styles.permissionContainer}>
-            <Text style={styles.permissionText}>Necesitamos permiso para acceder a la cámara</Text>
-            <TouchableOpacity style={styles.permissionButton} onPress={requestPermission}>
+            <Text style={styles.permissionText}>
+              Necesitamos permiso para acceder a la cámara
+            </Text>
+            <TouchableOpacity
+              style={styles.permissionButton}
+              onPress={requestPermission}
+            >
               <Text style={styles.permissionButtonText}>Conceder Permiso</Text>
             </TouchableOpacity>
           </View>
@@ -108,10 +123,16 @@ export default function AddItemScreen() {
       <View style={styles.cameraContainer}>
         <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
           <View style={styles.cameraControls}>
-            <TouchableOpacity style={styles.cameraButton} onPress={() => setShowCamera(false)}>
+            <TouchableOpacity
+              style={styles.cameraButton}
+              onPress={() => setShowCamera(false)}
+            >
               <X size={32} color="#FFFFFF" />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.captureButton} onPress={takePicture}>
+            <TouchableOpacity
+              style={styles.captureButton}
+              onPress={takePicture}
+            >
               <View style={styles.captureButtonInner} />
             </TouchableOpacity>
             <View style={styles.cameraButton} />
@@ -129,7 +150,9 @@ export default function AddItemScreen() {
         </View>
 
         <View style={styles.qrContainer}>
-          <Text style={styles.sectionTitle}>Código de Inventario generado:</Text>
+          <Text style={styles.sectionTitle}>
+            Código de Inventario generado:
+          </Text>
           <View style={styles.qrCode}>
             <QRCode value={skuCode} size={150} />
           </View>
@@ -143,16 +166,20 @@ export default function AddItemScreen() {
               <Image source={{ uri: photoUri }} style={styles.photoPreview} />
               <TouchableOpacity
                 style={styles.removePhotoButton}
-                onPress={() => setPhotoUri(null)}>
+                onPress={() => setPhotoUri(null)}
+              >
                 <X size={20} color="#FFFFFF" />
               </TouchableOpacity>
             </View>
           ) : (
             <TouchableOpacity
               style={styles.cameraButtonLarge}
-              onPress={() => setShowCamera(true)}>
+              onPress={() => setShowCamera(true)}
+            >
               <Camera size={32} color="#E53935" />
-              <Text style={styles.cameraButtonText}>Tomar foto del donativo</Text>
+              <Text style={styles.cameraButtonText}>
+                Tomar foto del donativo
+              </Text>
             </TouchableOpacity>
           )}
         </View>
@@ -210,7 +237,8 @@ export default function AddItemScreen() {
         <TouchableOpacity
           style={[styles.saveButton, loading && styles.saveButtonDisabled]}
           onPress={handleSave}
-          disabled={loading}>
+          disabled={loading}
+        >
           <Check size={20} color="#FFFFFF" />
           <Text style={styles.saveButtonText}>
             {loading ? 'Guardando...' : 'Registrar Inventario'}
