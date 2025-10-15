@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase, isSupabaseConfigured, getOrCreateDeviceId } from './supabase';
+import bcrypt from 'bcryptjs';
 
 export type InventoryItem = {
   id: string;
