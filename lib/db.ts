@@ -55,7 +55,8 @@ async function ensureDefaultAdmin(): Promise<void> {
     const users = raw ? (JSON.parse(raw) as LocalUser[]) : [];
     const hasAdmin = users.some((u) => u.role === 'admin');
     if (!hasAdmin) {
-      const admin: LocalUser = { username: 'admin', password: '123456', role: 'admin' };
+      const hashed = bcrypt.hashSync('123456', 10);
+      const admin: LocalUser = { username: 'admin', password: hashed, role: 'admin' };
       users.push(admin);
       await AsyncStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
     }
