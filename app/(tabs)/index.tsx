@@ -90,7 +90,7 @@ export default function InventoryScreen() {
   }
 
   const renderItem = ({ item }: { item: InventoryItem }) => (
-    <TouchableOpacity style={styles.card}>
+    <TouchableOpacity key={item.id} style={styles.card}>
       <View style={styles.cardContent}>
         {item.photo_url && (
           <Image source={{ uri: item.photo_url }} style={styles.itemImage} />
