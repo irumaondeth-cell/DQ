@@ -127,6 +127,27 @@ export default function ScannerScreen() {
               </View>
             )}
 
+            {scannedItem.unidad_organica && (
+              <View style={styles.resultRow}>
+                <Text style={styles.resultLabel}>Unidad Orgánica:</Text>
+                <Text style={styles.resultValue}>{scannedItem.unidad_organica}</Text>
+              </View>
+            )}
+
+            {scannedItem.cargo && (
+              <View style={styles.resultRow}>
+                <Text style={styles.resultLabel}>Cargo:</Text>
+                <Text style={styles.resultValue}>{scannedItem.cargo}</Text>
+              </View>
+            )}
+
+            {scannedItem.usuario && (
+              <View style={styles.resultRow}>
+                <Text style={styles.resultLabel}>Usuario:</Text>
+                <Text style={styles.resultValue}>{scannedItem.usuario}</Text>
+              </View>
+            )}
+
             <View style={styles.resultRow}>
               <Text style={styles.resultLabel}>Cantidad:</Text>
               <Text style={styles.resultValue}>{scannedItem.quantity}</Text>
