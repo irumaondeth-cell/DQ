@@ -40,9 +40,14 @@ export default function RootLayout() {
     );
   }
 
+  const LOGO_URL = 'https://cdn.builder.io/api/v1/image/assets%2Fbc935e2524ea4945a77bead3b9a7fa28%2F8f238af9f0574f569b6230b3aa443192?format=webp&width=800';
+
   if (!loggedIn) {
     return (
       <>
+        <SafeAreaView style={styles.headerWrapper}>
+          <Image source={{ uri: LOGO_URL }} style={styles.logo} resizeMode="contain" />
+        </SafeAreaView>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
@@ -54,6 +59,9 @@ export default function RootLayout() {
 
   return (
     <>
+      <SafeAreaView style={styles.headerWrapper}>
+        <Image source={{ uri: LOGO_URL }} style={styles.logo} resizeMode="contain" />
+      </SafeAreaView>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
