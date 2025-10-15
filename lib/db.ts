@@ -22,6 +22,8 @@ export type LocalUser = {
   username: string;
   password: string;
   role: 'admin' | 'user';
+  unidad_organica?: string | null;
+  cargo?: string | null;
 };
 
 const LOCAL_ITEMS_KEY = 'local_inventory_items_v1';
