@@ -70,3 +70,17 @@ export default function RootLayout() {
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  headerWrapper: {
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5EA',
+  },
+  logo: {
+    width: 160,
+    height: 48,
+  },
+});
