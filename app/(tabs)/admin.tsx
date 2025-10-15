@@ -70,7 +70,7 @@ export default function AdminScreen() {
         </TouchableOpacity>
 
         <Text style={[styles.label, { marginTop: 16 }]}>Usuarios existentes</Text>
-        <FlatList data={users} renderItem={renderItem} keyExtractor={(i) => i.username} />
+        <FlatList data={users} renderItem={renderItem} keyExtractor={(i, idx) => (i.username ?? String(idx))} />
       </View>
     </SafeAreaView>
   );
