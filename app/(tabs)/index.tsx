@@ -97,7 +97,7 @@ export default function InventoryScreen() {
         )}
         <View style={styles.itemInfo}>
           <Text style={styles.itemName}>{item.name}</Text>
-          <Text style={styles.itemDetail}>SKU: {item.qr_code}</Text>
+          <Text style={styles.itemDetail}>Código: {item.qr_code}</Text>
           {item.category && (
             <Text style={styles.itemDetail}>Categoría: {item.category}</Text>
           )}
@@ -127,15 +127,15 @@ export default function InventoryScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text style={styles.title}>Mi Inventario</Text>
+          <Text style={styles.title}>Donaciones</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             {isAdmin && (
               <TouchableOpacity onPress={() => router.push('/admin')}>
-                <Text style={{ color: '#007AFF', fontWeight: '600', marginRight: 12 }}>Admin</Text>
+                <Text style={{ color: '#E53935', fontWeight: '600', marginRight: 12 }}>Administración</Text>
               </TouchableOpacity>
             )}
             <TouchableOpacity onPress={async () => { try { await db.signOut(); } catch (e:any) { Alert.alert('Error', e.message); } }}>
-              <Text style={{ color: '#007AFF', fontWeight: '600' }}>Salir</Text>
+              <Text style={{ color: '#E53935', fontWeight: '600' }}>Salir</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -143,7 +143,7 @@ export default function InventoryScreen() {
           <Search size={20} color="#8E8E93" style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Buscar por nombre, categoría o SKU..."
+            placeholder="Buscar por beneficiario, categoría o código..."
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholderTextColor="#8E8E93"
@@ -157,7 +157,7 @@ export default function InventoryScreen() {
             {searchQuery ? 'No se encontraron resultados' : 'No hay items en el inventario'}
           </Text>
           <Text style={styles.emptySubtext}>
-            {searchQuery ? 'Intenta con otro término de búsqueda' : 'Agrega tu primer item usando el botón "Agregar"'}
+            {searchQuery ? 'Intenta con otro término de búsqueda' : 'Registra tu primera donación usando el botón "Agregar"'}
           </Text>
         </View>
       ) : (
