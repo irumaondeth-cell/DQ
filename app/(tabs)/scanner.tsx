@@ -24,7 +24,7 @@ export default function ScannerScreen() {
       if (item) {
         setScannedItem(item);
       } else {
-        Alert.alert('No encontrado', 'No se encontró ninguna donación con este código');
+        Alert.alert('No encontrado', 'No se encontró ningún ítem con este código');
         setScanned(false);
       }
     } catch (error: any) {
@@ -122,7 +122,7 @@ export default function ScannerScreen() {
           </View>
 
           <TouchableOpacity style={styles.scanAgainButton} onPress={resetScanner}>
-            <Text style={styles.scanAgainButtonText}>Escanear otra donación</Text>
+            <Text style={styles.scanAgainButtonText}>Escanear otro ítem</Text>
           </TouchableOpacity>
         </ScrollView>
       </SafeAreaView>
@@ -152,7 +152,7 @@ export default function ScannerScreen() {
               <View style={styles.overlaySide} />
             </View>
             <View style={styles.overlayBottom}>
-              <Text style={styles.instructionText}>Apunta al código de donación</Text>
+              <Text style={styles.instructionText}>Apunta al código de inventario</Text>
               <TouchableOpacity style={styles.cancelButton} onPress={() => setShowCamera(false)}>
                 <Text style={styles.cancelButtonText}>Cancelar</Text>
               </TouchableOpacity>
@@ -171,9 +171,9 @@ export default function ScannerScreen() {
 
       <View style={styles.startContainer}>
         <Package size={80} color="#E53935" />
-        <Text style={styles.startTitle}>Escanear código de donación</Text>
+        <Text style={styles.startTitle}>Escanear código de inventario</Text>
         <Text style={styles.startText}>
-          Escanea el código de donación o su QR para ver la información del donativo
+          Escanea el código de inventario o su QR para ver la información del ítem
         </Text>
         <TouchableOpacity style={styles.startButton} onPress={() => setShowCamera(true)}>
           <Text style={styles.startButtonText}>Iniciar Escaneo</Text>
