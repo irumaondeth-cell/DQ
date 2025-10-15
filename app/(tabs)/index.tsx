@@ -164,7 +164,7 @@ export default function InventoryScreen() {
         <FlatList
           data={filteredItems}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item, index) => (item.id ?? item.qr_code ?? String(index))}
           contentContainerStyle={styles.listContent}
         />
       )}
