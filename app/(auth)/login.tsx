@@ -53,7 +53,7 @@ export default function LoginScreen() {
           <Text style={styles.buttonText}>{loading ? 'Procesando…' : mode === 'login' ? 'Entrar' : 'Crear cuenta'}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setMode(mode === 'login' ? 'signup' : 'login')}>
-          <Text style={styles.link}>{mode === 'login' ? '¿No tienes cuenta? Regístrate' : '¿Ya tienes cuenta? Inicia sesión'}</Text>
+          <Text style={styles.link}>{mode === 'login' ? '¿No tienes cuenta? Regístrate como voluntario' : '¿Ya tienes cuenta? Inicia sesión'}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
