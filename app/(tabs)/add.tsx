@@ -125,11 +125,11 @@ export default function AddItemScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
-          <Text style={styles.title}>Registrar Donación</Text>
+          <Text style={styles.title}>Registrar Inventario</Text>
         </View>
 
         <View style={styles.qrContainer}>
-          <Text style={styles.sectionTitle}>Código de Donación generado:</Text>
+          <Text style={styles.sectionTitle}>Código de Inventario generado:</Text>
           <View style={styles.qrCode}>
             <QRCode value={skuCode} size={150} />
           </View>
@@ -213,7 +213,7 @@ export default function AddItemScreen() {
           disabled={loading}>
           <Check size={20} color="#FFFFFF" />
           <Text style={styles.saveButtonText}>
-            {loading ? 'Guardando...' : 'Registrar Donación'}
+            {loading ? 'Guardando...' : 'Registrar Inventario'}
           </Text>
         </TouchableOpacity>
       </ScrollView>
