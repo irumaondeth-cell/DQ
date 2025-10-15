@@ -69,6 +69,9 @@ export default function AddItemScreen() {
         description: description.trim(),
         category: category.trim(),
         location: location.trim(),
+        unidad_organica: unidadOrganica.trim() || null,
+        cargo: cargo.trim() || null,
+        usuario: usuarioField.trim() || null,
         quantity: parseInt(quantity) || 1,
         photo_url: photoUri,
         user_id: deviceId,
@@ -224,6 +227,33 @@ export default function AddItemScreen() {
             value={location}
             onChangeText={setLocation}
             placeholder="Ej: Almacén A, Estante 3"
+            placeholderTextColor="#8E8E93"
+          />
+
+          <Text style={styles.label}>Unidad Orgánica</Text>
+          <TextInput
+            style={styles.input}
+            value={unidadOrganica}
+            onChangeText={setUnidadOrganica}
+            placeholder="Ej: Dirección de Proyectos"
+            placeholderTextColor="#8E8E93"
+          />
+
+          <Text style={styles.label}>Cargo</Text>
+          <TextInput
+            style={styles.input}
+            value={cargo}
+            onChangeText={setCargo}
+            placeholder="Ej: Coordinador"
+            placeholderTextColor="#8E8E93"
+          />
+
+          <Text style={styles.label}>Usuario</Text>
+          <TextInput
+            style={styles.input}
+            value={usuarioField}
+            onChangeText={setUsuarioField}
+            placeholder="Nombre del usuario que registra"
             placeholderTextColor="#8E8E93"
           />
 
