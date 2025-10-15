@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   label: { fontWeight: '600', marginTop: 8 },
   input: { backgroundColor: '#F2F2F7', borderRadius: 8, padding: 12, marginTop: 8, color: '#000' },
   roleBtn: { padding: 10, backgroundColor: '#FFF', borderRadius: 8, borderWidth: 1, borderColor: '#E5E5EA', marginRight: 8 },
-  roleBtnActive: { backgroundColor: '#007AFF' },
+  roleBtnActive: { backgroundColor: '#E53935' },
   roleText: { color: '#000' },
   roleTextActive: { color: '#FFF', fontWeight: '700' },
   button: { backgroundColor: '#007AFF', padding: 12, borderRadius: 8, alignItems: 'center', marginTop: 12 },
