@@ -54,7 +54,7 @@ async function ensureDefaultAdmin(): Promise<void> {
     const users = raw ? (JSON.parse(raw) as LocalUser[]) : [];
     const hasAdmin = users.some((u) => u.role === 'admin');
     if (!hasAdmin) {
-      const admin: LocalUser = { username: 'administrador', password: '123456789', role: 'admin' };
+      const admin: LocalUser = { username: 'admin', password: '123456', role: 'admin' };
       users.push(admin);
       await AsyncStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
     }
