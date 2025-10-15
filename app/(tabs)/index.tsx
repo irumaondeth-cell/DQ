@@ -1,5 +1,14 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, TextInput, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  TextInput,
+  Alert,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Search, Trash2 } from 'lucide-react-native';
 import { InventoryItem, getOrCreateDeviceId } from '@/lib/supabase';
@@ -23,10 +32,11 @@ export default function InventoryScreen() {
     if (searchQuery.trim() === '') {
       setFilteredItems(items);
     } else {
-      const filtered = items.filter(item =>
-        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.qr_code.toLowerCase().includes(searchQuery.toLowerCase())
+      const filtered = items.filter(
+        (item) =>
+          item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.qr_code.toLowerCase().includes(searchQuery.toLowerCase()),
       );
       setFilteredItems(filtered);
     }
@@ -52,7 +62,10 @@ export default function InventoryScreen() {
   async function loadItems() {
     try {
       if (!supabase) {
-        Alert.alert('Configuración requerida', 'Conecta Supabase para cargar el inventario.');
+        Alert.alert(
+          'Configuración requerida',
+          'Conecta Supabase para cargar el inventario.',
+        );
         setItems([]);
         setFilteredItems([]);
         return;
@@ -85,7 +98,7 @@ export default function InventoryScreen() {
             }
           },
         },
-      ]
+      ],
     );
   }
 
@@ -105,7 +118,9 @@ export default function InventoryScreen() {
             <Text style={styles.itemDetail}>Ubicación: {item.location}</Text>
           )}
           {item.unidad_organica ? (
-            <Text style={styles.itemDetail}>Unidad Orgánica: {item.unidad_organica}</Text>
+            <Text style={styles.itemDetail}>
+              Unidad Orgánica: {item.unidad_organica}
+            </Text>
           ) : null}
           {item.cargo ? (
             <Text style={styles.itemDetail}>Cargo: {item.cargo}</Text>
@@ -117,7 +132,8 @@ export default function InventoryScreen() {
         </View>
         <TouchableOpacity
           style={styles.deleteButton}
-          onPress={() => deleteItem(item.id)}>
+          onPress={() => deleteItem(item.id)}
+        >
           <Trash2 size={20} color="#FF3B30" />
         </TouchableOpacity>
       </View>
@@ -135,15 +151,37 @@ export default function InventoryScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
           <Text style={styles.title}>Inventario</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             {isAdmin && (
               <TouchableOpacity onPress={() => router.push('/admin')}>
-                <Text style={{ color: '#E53935', fontWeight: '600', marginRight: 12 }}>Administración</Text>
+                <Text
+                  style={{
+                    color: '#E53935',
+                    fontWeight: '600',
+                    marginRight: 12,
+                  }}
+                >
+                  Administración
+                </Text>
               </TouchableOpacity>
             )}
-            <TouchableOpacity onPress={async () => { try { await db.signOut(); } catch (e:any) { Alert.alert('Error', e.message); } }}>
+            <TouchableOpacity
+              onPress={async () => {
+                try {
+                  await db.signOut();
+                } catch (e: any) {
+                  Alert.alert('Error', e.message);
+                }
+              }}
+            >
               <Text style={{ color: '#E53935', fontWeight: '600' }}>Salir</Text>
             </TouchableOpacity>
           </View>
@@ -163,17 +201,23 @@ export default function InventoryScreen() {
       {filteredItems.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>
-            {searchQuery ? 'No se encontraron resultados' : 'No hay items en el inventario'}
+            {searchQuery
+              ? 'No se encontraron resultados'
+              : 'No hay items en el inventario'}
           </Text>
           <Text style={styles.emptySubtext}>
-            {searchQuery ? 'Intenta con otro término de búsqueda' : 'Registra tu primera donación usando el botón "Agregar"'}
+            {searchQuery
+              ? 'Intenta con otro término de búsqueda'
+              : 'Registra tu primera donación usando el botón "Agregar"'}
           </Text>
         </View>
       ) : (
         <FlatList
           data={filteredItems}
           renderItem={renderItem}
-          keyExtractor={(item, index) => (item.id ?? item.qr_code ?? String(index))}
+          keyExtractor={(item, index) =>
+            item.id ?? item.qr_code ?? String(index)
+          }
           contentContainerStyle={styles.listContent}
         />
       )}

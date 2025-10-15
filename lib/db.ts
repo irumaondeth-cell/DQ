@@ -1,5 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { supabase, isSupabaseConfigured, getOrCreateDeviceId } from './supabase';
+import {
+  supabase,
+  isSupabaseConfigured,
+  getOrCreateDeviceId,
+} from './supabase';
 import bcrypt from 'bcryptjs';
 
 export type InventoryItem = {
@@ -56,7 +60,11 @@ async function ensureDefaultAdmin(): Promise<void> {
     const hasAdmin = users.some((u) => u.role === 'admin');
     if (!hasAdmin) {
       const hashed = bcrypt.hashSync('123456', 10);
-      const admin: LocalUser = { username: 'admin', password: hashed, role: 'admin' };
+      const admin: LocalUser = {
+        username: 'admin',
+        password: hashed,
+        role: 'admin',
+      };
       users.push(admin);
       await AsyncStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
     }
@@ -83,7 +91,13 @@ export async function loadUsers(): Promise<LocalUser[]> {
   }
 }
 
-export async function createUserAdmin(username: string, password: string, role: 'admin' | 'user' = 'user', unidad_organica?: string | null, cargo?: string | null) {
+export async function createUserAdmin(
+  username: string,
+  password: string,
+  role: 'admin' | 'user' = 'user',
+  unidad_organica?: string | null,
+  cargo?: string | null,
+) {
   if (supabase) {
     // Replace with real Supabase user creation if desired
     throw new Error('Create user via Supabase not implemented');
@@ -92,9 +106,16 @@ export async function createUserAdmin(username: string, password: string, role: 
   try {
     const raw = await AsyncStorage.getItem(LOCAL_USERS_KEY);
     const users = raw ? (JSON.parse(raw) as LocalUser[]) : [];
-    if (users.find((u) => u.username === username)) throw new Error('El usuario ya existe');
+    if (users.find((u) => u.username === username))
+      throw new Error('El usuario ya existe');
     const hashed = await bcrypt.hash(password, 10);
-    const newUser: LocalUser = { username, password: hashed, role, unidad_organica: unidad_organica ?? null, cargo: cargo ?? null };
+    const newUser: LocalUser = {
+      username,
+      password: hashed,
+      role,
+      unidad_organica: unidad_organica ?? null,
+      cargo: cargo ?? null,
+    };
     users.push(newUser);
     await AsyncStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
   } catch (e: any) {
@@ -122,7 +143,9 @@ export async function loadItems(): Promise<InventoryItem[]> {
   }
 }
 
-export async function insertItem(item: Partial<InventoryItem>): Promise<InventoryItem> {
+export async function insertItem(
+  item: Partial<InventoryItem>,
+): Promise<InventoryItem> {
   if (supabase) {
     const deviceId = (await getOrCreateDeviceId()) || 'unknown';
     const payload = {
@@ -138,7 +161,11 @@ export async function insertItem(item: Partial<InventoryItem>): Promise<Inventor
       photo_url: item.photo_url ?? null,
       user_id: item.user_id ?? deviceId,
     } as any;
-    const { data, error } = await supabase.from('inventory_items').insert(payload).select().maybeSingle();
+    const { data, error } = await supabase
+      .from('inventory_items')
+      .insert(payload)
+      .select()
+      .maybeSingle();
     if (error) throw error;
     return (data as InventoryItem) ?? (payload as InventoryItem);
   }
@@ -147,7 +174,9 @@ export async function insertItem(item: Partial<InventoryItem>): Promise<Inventor
   const now = new Date().toISOString();
   const newItem: InventoryItem = {
     id: generateId(),
-    qr_code: item.qr_code ?? `SKU-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+    qr_code:
+      item.qr_code ??
+      `SKU-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
     name: item.name ?? '',
     description: item.description ?? '',
     photo_url: item.photo_url ?? null,
@@ -175,7 +204,10 @@ export async function insertItem(item: Partial<InventoryItem>): Promise<Inventor
 
 export async function deleteItem(id: string): Promise<void> {
   if (supabase) {
-    const { error } = await supabase.from('inventory_items').delete().eq('id', id);
+    const { error } = await supabase
+      .from('inventory_items')
+      .delete()
+      .eq('id', id);
     if (error) throw error;
     return;
   }
@@ -212,7 +244,10 @@ export async function findBySKU(sku: string): Promise<InventoryItem | null> {
 }
 
 // --- Auth emulation for local mode ---
-export async function signUp(username: string, password: string): Promise<void> {
+export async function signUp(
+  username: string,
+  password: string,
+): Promise<void> {
   if (supabase) {
     const { error } = await supabase.auth.signUp({ email: username, password });
     if (error) throw error;
@@ -222,7 +257,8 @@ export async function signUp(username: string, password: string): Promise<void> 
   try {
     const raw = await AsyncStorage.getItem(LOCAL_USERS_KEY);
     const users = raw ? (JSON.parse(raw) as LocalUser[]) : [];
-    if (users.find((u) => u.username === username)) throw new Error('El usuario ya existe');
+    if (users.find((u) => u.username === username))
+      throw new Error('El usuario ya existe');
     const hashed = await bcrypt.hash(password, 10);
     users.push({ username, password: hashed, role: 'user' });
     await AsyncStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
@@ -231,9 +267,15 @@ export async function signUp(username: string, password: string): Promise<void> 
   }
 }
 
-export async function signIn(username: string, password: string): Promise<void> {
+export async function signIn(
+  username: string,
+  password: string,
+): Promise<void> {
   if (supabase) {
-    const { error } = await supabase.auth.signInWithPassword({ email: username, password });
+    const { error } = await supabase.auth.signInWithPassword({
+      email: username,
+      password,
+    });
     if (error) throw error;
     return;
   }
@@ -246,8 +288,13 @@ export async function signIn(username: string, password: string): Promise<void> 
     if (!found) throw new Error('Credenciales inválidas');
     const match = await bcrypt.compare(password, found.password);
     if (!match) throw new Error('Credenciales inválidas');
-    await AsyncStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify({ user: { username: found.username, role: found.role } }));
-    notifyAuth('SIGNED_IN', { session: { user: { username: found.username, role: found.role } } });
+    await AsyncStorage.setItem(
+      LOCAL_SESSION_KEY,
+      JSON.stringify({ user: { username: found.username, role: found.role } }),
+    );
+    notifyAuth('SIGNED_IN', {
+      session: { user: { username: found.username, role: found.role } },
+    });
   } catch (e: any) {
     throw e;
   }
@@ -286,7 +333,9 @@ export async function getSession(): Promise<{ session: any } | null> {
 
 export function onAuthStateChange(cb: (event: string, session: any) => void) {
   if (supabase) {
-    const { data } = supabase.auth.onAuthStateChange((_event, session) => cb(_event, session));
+    const { data } = supabase.auth.onAuthStateChange((_event, session) =>
+      cb(_event, session),
+    );
     return () => data.subscription.unsubscribe();
   }
 

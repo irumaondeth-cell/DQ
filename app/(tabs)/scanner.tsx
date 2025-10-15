@@ -130,7 +130,9 @@ export default function ScannerScreen() {
             {scannedItem.unidad_organica && (
               <View style={styles.resultRow}>
                 <Text style={styles.resultLabel}>Unidad Orgánica:</Text>
-                <Text style={styles.resultValue}>{scannedItem.unidad_organica}</Text>
+                <Text style={styles.resultValue}>
+                  {scannedItem.unidad_organica}
+                </Text>
               </View>
             )}
 
