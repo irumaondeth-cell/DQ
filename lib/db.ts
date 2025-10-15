@@ -93,7 +93,8 @@ export async function createUserAdmin(username: string, password: string, role: 
     const raw = await AsyncStorage.getItem(LOCAL_USERS_KEY);
     const users = raw ? (JSON.parse(raw) as LocalUser[]) : [];
     if (users.find((u) => u.username === username)) throw new Error('El usuario ya existe');
-    const newUser: LocalUser = { username, password, role, unidad_organica: unidad_organica ?? null, cargo: cargo ?? null };
+    const hashed = await bcrypt.hash(password, 10);
+    const newUser: LocalUser = { username, password: hashed, role, unidad_organica: unidad_organica ?? null, cargo: cargo ?? null };
     users.push(newUser);
     await AsyncStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
   } catch (e: any) {
