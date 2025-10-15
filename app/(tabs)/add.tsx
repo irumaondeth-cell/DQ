@@ -32,6 +32,10 @@ export default function AddItemScreen() {
   const cameraRef = useRef<CameraView>(null);
   const router = useRouter();
 
+  const [unidadOrganica, setUnidadOrganica] = useState('');
+  const [cargo, setCargo] = useState('');
+  const [usuarioField, setUsuarioField] = useState('');
+
   const skuCode = `SKU-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
   async function takePicture() {
