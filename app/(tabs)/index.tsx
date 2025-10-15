@@ -127,7 +127,7 @@ export default function InventoryScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text style={styles.title}>Donaciones</Text>
+          <Text style={styles.title}>Inventario</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             {isAdmin && (
               <TouchableOpacity onPress={() => router.push('/admin')}>
