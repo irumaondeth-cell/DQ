@@ -76,22 +76,28 @@ export default function AdminScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.card}>
         <Text style={styles.title}>Administrar Usuarios</Text>
-        <Text style={styles.label}>Crear nuevo usuario</Text>
-        <TextInput style={styles.input} placeholder="Usuario" value={username} onChangeText={setUsername} placeholderTextColor="#8E8E93" />
-        <TextInput style={styles.input} placeholder="Contraseña" value={password} secureTextEntry onChangeText={setPassword} placeholderTextColor="#8E8E93" />
-        <TextInput style={styles.input} placeholder="Unidad Orgánica" value={unidadOrg} onChangeText={setUnidadOrg} placeholderTextColor="#8E8E93" />
-        <TextInput style={styles.input} placeholder="Cargo" value={cargoField} onChangeText={setCargoField} placeholderTextColor="#8E8E93" />
-        <View style={{ flexDirection: 'row', marginTop: 8 }}>
-          <TouchableOpacity style={[styles.roleBtn, role === 'user' && styles.roleBtnActive]} onPress={() => setRole('user')}>
-            <Text style={role === 'user' ? styles.roleTextActive : styles.roleText}>Usuario</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.roleBtn, role === 'admin' && styles.roleBtnActive]} onPress={() => setRole('admin')}>
-            <Text style={role === 'admin' ? styles.roleTextActive : styles.roleText}>Admin</Text>
-          </TouchableOpacity>
-        </View>
-        <TouchableOpacity style={styles.button} onPress={handleCreate} disabled={loading}>
-          <Text style={styles.buttonText}>{loading ? 'Creando…' : 'Crear Usuario'}</Text>
-        </TouchableOpacity>
+        {isAdmin ? (
+          <>
+            <Text style={styles.label}>Crear nuevo usuario</Text>
+            <TextInput style={styles.input} placeholder="Usuario" value={username} onChangeText={setUsername} placeholderTextColor="#8E8E93" />
+            <TextInput style={styles.input} placeholder="Contraseña" value={password} secureTextEntry onChangeText={setPassword} placeholderTextColor="#8E8E93" />
+            <TextInput style={styles.input} placeholder="Unidad Orgánica" value={unidadOrg} onChangeText={setUnidadOrg} placeholderTextColor="#8E8E93" />
+            <TextInput style={styles.input} placeholder="Cargo" value={cargoField} onChangeText={setCargoField} placeholderTextColor="#8E8E93" />
+            <View style={{ flexDirection: 'row', marginTop: 8 }}>
+              <TouchableOpacity style={[styles.roleBtn, role === 'user' && styles.roleBtnActive]} onPress={() => setRole('user')}>
+                <Text style={role === 'user' ? styles.roleTextActive : styles.roleText}>Usuario</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.roleBtn, role === 'admin' && styles.roleBtnActive]} onPress={() => setRole('admin')}>
+                <Text style={role === 'admin' ? styles.roleTextActive : styles.roleText}>Admin</Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity style={styles.button} onPress={handleCreate} disabled={loading}>
+              <Text style={styles.buttonText}>{loading ? 'Creando…' : 'Crear Usuario'}</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <Text style={{ color: '#666', marginBottom: 12 }}>Solo los administradores pueden crear nuevos usuarios.</Text>
+        )}
 
         <Text style={[styles.label, { marginTop: 16 }]}>Usuarios existentes</Text>
         <FlatList data={users} renderItem={renderItem} keyExtractor={(i, idx) => (i.username ?? String(idx))} />
