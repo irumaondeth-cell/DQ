@@ -14,8 +14,19 @@ export default function AdminScreen() {
   const [cargoField, setCargoField] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const router = useRouter();
+  const [isAdmin, setIsAdmin] = useState(false);
+
   useEffect(() => {
     loadUsers();
+    (async () => {
+      try {
+        const session = await db.getSession();
+        setIsAdmin(Boolean(session?.session?.user?.role === 'admin'));
+      } catch (e) {
+        setIsAdmin(false);
+      }
+    })();
   }, []);
 
   async function loadUsers() {
