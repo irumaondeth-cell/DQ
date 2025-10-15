@@ -10,6 +10,9 @@ export type InventoryItem = {
   quantity: number;
   category: string;
   location: string;
+  unidad_organica?: string | null;
+  cargo?: string | null;
+  usuario?: string | null;
   created_at: string;
   updated_at: string;
   user_id: string;
