@@ -44,7 +44,7 @@ export default function AdminScreen() {
   }
 
   const renderItem = ({ item }: { item: { username: string; role: string } }) => (
-    <View style={styles.userRow}>
+    <View key={item.username} style={styles.userRow}>
       <Text style={styles.userEmail}>{item.username}</Text>
       <Text style={styles.userRole}>{item.role}</Text>
     </View>
