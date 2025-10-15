@@ -45,10 +45,17 @@ export default function AdminScreen() {
     }
   }
 
-  const renderItem = ({ item }: { item: { username: string; role: string } }) => (
+  const renderItem = ({ item }: { item: { username: string; role: string; unidad_organica?: string | null; cargo?: string | null } }) => (
     <View key={item.username} style={styles.userRow}>
-      <Text style={styles.userEmail}>{item.username}</Text>
-      <Text style={styles.userRole}>{item.role}</Text>
+      <View>
+        <Text style={styles.userEmail}>{item.username}</Text>
+        <Text style={styles.userRole}>{item.role} · {item.unidad_organica || '-'} · {item.cargo || '-'}</Text>
+      </View>
+      <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity onPress={() => router.push(`/usuarios?user=${item.username}`)} style={{ marginRight: 8 }}>
+          <Text style={{ color: '#007AFF' }}>Ver registros</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
