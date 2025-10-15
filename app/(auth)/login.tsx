@@ -67,5 +67,5 @@ const styles = StyleSheet.create({
   input: { backgroundColor: '#F2F2F7', borderRadius: 8, padding: 12, fontSize: 16, color: '#000', marginBottom: 12 },
   button: { backgroundColor: '#007AFF', padding: 14, borderRadius: 10, alignItems: 'center', marginTop: 8 },
   buttonText: { color: '#FFF', fontWeight: '600', fontSize: 16 },
-  link: { color: '#007AFF', textAlign: 'center', marginTop: 12, fontWeight: '600' },
+  link: { color: '#E53935', textAlign: 'center', marginTop: 12, fontWeight: '600' },
 });
