@@ -125,11 +125,11 @@ export default function AddItemScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
-          <Text style={styles.title}>Agregar Item</Text>
+          <Text style={styles.title}>Registrar Donación</Text>
         </View>
 
         <View style={styles.qrContainer}>
-          <Text style={styles.sectionTitle}>Código SKU generado:</Text>
+          <Text style={styles.sectionTitle}>Código de Donación generado:</Text>
           <View style={styles.qrCode}>
             <QRCode value={skuCode} size={150} />
           </View>
@@ -137,7 +137,7 @@ export default function AddItemScreen() {
         </View>
 
         <View style={styles.photoSection}>
-          <Text style={styles.sectionTitle}>Foto del Item:</Text>
+          <Text style={styles.sectionTitle}>Foto del Donativo:</Text>
           {photoUri ? (
             <View style={styles.photoPreviewContainer}>
               <Image source={{ uri: photoUri }} style={styles.photoPreview} />
@@ -151,8 +151,8 @@ export default function AddItemScreen() {
             <TouchableOpacity
               style={styles.cameraButtonLarge}
               onPress={() => setShowCamera(true)}>
-              <Camera size={32} color="#007AFF" />
-              <Text style={styles.cameraButtonText}>Tomar Foto</Text>
+              <Camera size={32} color="#E53935" />
+              <Text style={styles.cameraButtonText}>Tomar foto del donativo</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -163,7 +163,7 @@ export default function AddItemScreen() {
             style={styles.input}
             value={name}
             onChangeText={setName}
-            placeholder="Nombre del item"
+            placeholder="Nombre del artículo donado"
             placeholderTextColor="#8E8E93"
           />
 
@@ -183,7 +183,7 @@ export default function AddItemScreen() {
             style={styles.input}
             value={category}
             onChangeText={setCategory}
-            placeholder="Ej: Electrónica, Herramientas, etc."
+            placeholder="Ej: Ropa, Alimentos, Juguetes"
             placeholderTextColor="#8E8E93"
           />
 
@@ -213,7 +213,7 @@ export default function AddItemScreen() {
           disabled={loading}>
           <Check size={20} color="#FFFFFF" />
           <Text style={styles.saveButtonText}>
-            {loading ? 'Guardando...' : 'Guardar Item'}
+            {loading ? 'Guardando...' : 'Registrar Donación'}
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -298,12 +298,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#007AFF',
+    borderColor: '#E53935',
     borderStyle: 'dashed',
   },
   cameraButtonText: {
     fontSize: 16,
-    color: '#007AFF',
+    color: '#E53935',
     marginTop: 8,
     fontWeight: '600',
   },
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   saveButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#E53935',
     marginHorizontal: 16,
     marginTop: 24,
     padding: 16,
@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#E53935',
   },
   permissionContainer: {
     flex: 1,
@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   permissionButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#E53935',
     paddingHorizontal: 32,
     paddingVertical: 16,
     borderRadius: 12,
