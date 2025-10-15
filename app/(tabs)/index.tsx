@@ -104,6 +104,15 @@ export default function InventoryScreen() {
           {item.location && (
             <Text style={styles.itemDetail}>Ubicación: {item.location}</Text>
           )}
+          {item.unidad_organica ? (
+            <Text style={styles.itemDetail}>Unidad Orgánica: {item.unidad_organica}</Text>
+          ) : null}
+          {item.cargo ? (
+            <Text style={styles.itemDetail}>Cargo: {item.cargo}</Text>
+          ) : null}
+          {item.usuario ? (
+            <Text style={styles.itemDetail}>Usuario: {item.usuario}</Text>
+          ) : null}
           <Text style={styles.itemDetail}>Cantidad: {item.quantity}</Text>
         </View>
         <TouchableOpacity
