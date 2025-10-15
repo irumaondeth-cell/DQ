@@ -24,7 +24,7 @@ export default function ScannerScreen() {
       if (item) {
         setScannedItem(item);
       } else {
-        Alert.alert('No encontrado', 'No se encontró ningún item con este SKU');
+        Alert.alert('No encontrado', 'No se encontró ninguna donación con este código');
         setScanned(false);
       }
     } catch (error: any) {
@@ -70,7 +70,7 @@ export default function ScannerScreen() {
         <View style={styles.header}>
           <Text style={styles.title}>Item Encontrado</Text>
           <TouchableOpacity onPress={resetScanner}>
-            <X size={28} color="#007AFF" />
+            <X size={28} color="#E53935" />
           </TouchableOpacity>
         </View>
 
@@ -122,7 +122,7 @@ export default function ScannerScreen() {
           </View>
 
           <TouchableOpacity style={styles.scanAgainButton} onPress={resetScanner}>
-            <Text style={styles.scanAgainButtonText}>Escanear Otro QR</Text>
+            <Text style={styles.scanAgainButtonText}>Escanear otra donación</Text>
           </TouchableOpacity>
         </ScrollView>
       </SafeAreaView>
@@ -152,7 +152,7 @@ export default function ScannerScreen() {
               <View style={styles.overlaySide} />
             </View>
             <View style={styles.overlayBottom}>
-              <Text style={styles.instructionText}>Apunta al código SKU/QR</Text>
+              <Text style={styles.instructionText}>Apunta al código de donación</Text>
               <TouchableOpacity style={styles.cancelButton} onPress={() => setShowCamera(false)}>
                 <Text style={styles.cancelButtonText}>Cancelar</Text>
               </TouchableOpacity>
@@ -170,10 +170,10 @@ export default function ScannerScreen() {
       </View>
 
       <View style={styles.startContainer}>
-        <Package size={80} color="#007AFF" />
-        <Text style={styles.startTitle}>Escanear Código SKU/QR</Text>
+        <Package size={80} color="#E53935" />
+        <Text style={styles.startTitle}>Escanear código de donación</Text>
         <Text style={styles.startText}>
-          Escanea el SKU (o QR del SKU) de un item para ver su información completa
+          Escanea el código de donación o su QR para ver la información del donativo
         </Text>
         <TouchableOpacity style={styles.startButton} onPress={() => setShowCamera(true)}>
           <Text style={styles.startButtonText}>Iniciar Escaneo</Text>
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   permissionButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#E53935',
     paddingHorizontal: 32,
     paddingVertical: 16,
     borderRadius: 12,
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   startButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#E53935',
     paddingHorizontal: 32,
     paddingVertical: 16,
     borderRadius: 12,
@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   cancelButtonText: {
-    color: '#007AFF',
+    color: '#E53935',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -377,7 +377,7 @@ const styles = StyleSheet.create({
     color: '#000000',
   },
   scanAgainButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#E53935',
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',
