@@ -4,10 +4,12 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Alert } 
 import * as db from '@/lib/db';
 
 export default function AdminScreen() {
-  const [users, setUsers] = useState<Array<{ username: string; role: string }>>([]);
+  const [users, setUsers] = useState<Array<{ username: string; role: string; unidad_organica?: string | null; cargo?: string | null }>>([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'admin' | 'user'>('user');
+  const [unidadOrg, setUnidadOrg] = useState('');
+  const [cargoField, setCargoField] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
