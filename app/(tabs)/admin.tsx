@@ -32,7 +32,7 @@ export default function AdminScreen() {
     }
     setLoading(true);
     try {
-      await db.createUserAdmin(username.trim(), password, role);
+      await db.createUserAdmin(username.trim(), password, role, unidadOrg.trim() || null, cargoField.trim() || null);
       setUsername('');
       setPassword('');
       setRole('user');
