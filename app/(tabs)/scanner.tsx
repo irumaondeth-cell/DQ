@@ -1,9 +1,18 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert, TouchableOpacity, ScrollView, Image } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { X, Package } from 'lucide-react-native';
-import { supabase, InventoryItem } from '@/lib/supabase';
+import { InventoryItem } from '@/lib/supabase';
+import * as db from '@/lib/db';
 
 export default function ScannerScreen() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -18,18 +27,15 @@ export default function ScannerScreen() {
     setShowCamera(false);
 
     try {
-      const { data: items, error } = await supabase
-        .from('inventory_items')
-        .select('*')
-        .eq('qr_code', data)
-        .maybeSingle();
+      const item = await db.findBySKU(data);
 
-      if (error) throw error;
-
-      if (items) {
-        setScannedItem(items);
+      if (item) {
+        setScannedItem(item);
       } else {
-        Alert.alert('No encontrado', 'No se encontró ningún item con este código QR');
+        Alert.alert(
+          'No encontrado',
+          'No se encontró ningún ítem con este código',
+        );
         setScanned(false);
       }
     } catch (error: any) {
@@ -61,7 +67,10 @@ export default function ScannerScreen() {
           <Text style={styles.permissionText}>
             Necesitamos acceso a la cámara para escanear códigos QR
           </Text>
-          <TouchableOpacity style={styles.permissionButton} onPress={requestPermission}>
+          <TouchableOpacity
+            style={styles.permissionButton}
+            onPress={requestPermission}
+          >
             <Text style={styles.permissionButtonText}>Conceder Permiso</Text>
           </TouchableOpacity>
         </View>
@@ -75,27 +84,32 @@ export default function ScannerScreen() {
         <View style={styles.header}>
           <Text style={styles.title}>Item Encontrado</Text>
           <TouchableOpacity onPress={resetScanner}>
-            <X size={28} color="#007AFF" />
+            <X size={28} color="#E53935" />
           </TouchableOpacity>
         </View>
 
         <ScrollView contentContainerStyle={styles.resultContent}>
           {scannedItem.photo_url && (
-            <Image source={{ uri: scannedItem.photo_url }} style={styles.resultImage} />
+            <Image
+              source={{ uri: scannedItem.photo_url }}
+              style={styles.resultImage}
+            />
           )}
 
           <View style={styles.resultCard}>
             <Text style={styles.resultName}>{scannedItem.name}</Text>
 
             <View style={styles.resultRow}>
-              <Text style={styles.resultLabel}>Código QR:</Text>
+              <Text style={styles.resultLabel}>SKU:</Text>
               <Text style={styles.resultValue}>{scannedItem.qr_code}</Text>
             </View>
 
             {scannedItem.description && (
               <View style={styles.resultRow}>
                 <Text style={styles.resultLabel}>Descripción:</Text>
-                <Text style={styles.resultValue}>{scannedItem.description}</Text>
+                <Text style={styles.resultValue}>
+                  {scannedItem.description}
+                </Text>
               </View>
             )}
 
@@ -113,6 +127,29 @@ export default function ScannerScreen() {
               </View>
             )}
 
+            {scannedItem.unidad_organica && (
+              <View style={styles.resultRow}>
+                <Text style={styles.resultLabel}>Unidad Orgánica:</Text>
+                <Text style={styles.resultValue}>
+                  {scannedItem.unidad_organica}
+                </Text>
+              </View>
+            )}
+
+            {scannedItem.cargo && (
+              <View style={styles.resultRow}>
+                <Text style={styles.resultLabel}>Cargo:</Text>
+                <Text style={styles.resultValue}>{scannedItem.cargo}</Text>
+              </View>
+            )}
+
+            {scannedItem.usuario && (
+              <View style={styles.resultRow}>
+                <Text style={styles.resultLabel}>Usuario:</Text>
+                <Text style={styles.resultValue}>{scannedItem.usuario}</Text>
+              </View>
+            )}
+
             <View style={styles.resultRow}>
               <Text style={styles.resultLabel}>Cantidad:</Text>
               <Text style={styles.resultValue}>{scannedItem.quantity}</Text>
@@ -126,8 +163,11 @@ export default function ScannerScreen() {
             </View>
           </View>
 
-          <TouchableOpacity style={styles.scanAgainButton} onPress={resetScanner}>
-            <Text style={styles.scanAgainButtonText}>Escanear Otro QR</Text>
+          <TouchableOpacity
+            style={styles.scanAgainButton}
+            onPress={resetScanner}
+          >
+            <Text style={styles.scanAgainButtonText}>Escanear otro ítem</Text>
           </TouchableOpacity>
         </ScrollView>
       </SafeAreaView>
@@ -143,7 +183,8 @@ export default function ScannerScreen() {
           barcodeScannerSettings={{
             barcodeTypes: ['qr'],
           }}
-          onBarcodeScanned={handleBarCodeScanned}>
+          onBarcodeScanned={handleBarCodeScanned}
+        >
           <View style={styles.overlay}>
             <View style={styles.overlayTop} />
             <View style={styles.overlayMiddle}>
@@ -157,8 +198,13 @@ export default function ScannerScreen() {
               <View style={styles.overlaySide} />
             </View>
             <View style={styles.overlayBottom}>
-              <Text style={styles.instructionText}>Apunta al código QR</Text>
-              <TouchableOpacity style={styles.cancelButton} onPress={() => setShowCamera(false)}>
+              <Text style={styles.instructionText}>
+                Apunta al código de inventario
+              </Text>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setShowCamera(false)}
+              >
                 <Text style={styles.cancelButtonText}>Cancelar</Text>
               </TouchableOpacity>
             </View>
@@ -171,16 +217,20 @@ export default function ScannerScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Escanear QR</Text>
+        <Text style={styles.title}>Escanear SKU</Text>
       </View>
 
       <View style={styles.startContainer}>
-        <Package size={80} color="#007AFF" />
-        <Text style={styles.startTitle}>Escanear Código QR</Text>
+        <Package size={80} color="#E53935" />
+        <Text style={styles.startTitle}>Escanear código de inventario</Text>
         <Text style={styles.startText}>
-          Escanea el código QR de un item para ver su información completa
+          Escanea el código de inventario o su QR para ver la información del
+          ítem
         </Text>
-        <TouchableOpacity style={styles.startButton} onPress={() => setShowCamera(true)}>
+        <TouchableOpacity
+          style={styles.startButton}
+          onPress={() => setShowCamera(true)}
+        >
           <Text style={styles.startButtonText}>Iniciar Escaneo</Text>
         </TouchableOpacity>
       </View>
@@ -228,7 +278,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   permissionButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#E53935',
     paddingHorizontal: 32,
     paddingVertical: 16,
     borderRadius: 12,
@@ -258,7 +308,7 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   startButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#E53935',
     paddingHorizontal: 32,
     paddingVertical: 16,
     borderRadius: 12,
@@ -342,7 +392,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   cancelButtonText: {
-    color: '#007AFF',
+    color: '#E53935',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -382,7 +432,7 @@ const styles = StyleSheet.create({
     color: '#000000',
   },
   scanAgainButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#E53935',
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',

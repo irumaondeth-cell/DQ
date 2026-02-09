@@ -1,8 +1,18 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, TextInput, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  TextInput,
+  Alert,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Search, Trash2 } from 'lucide-react-native';
-import { supabase, InventoryItem, getOrCreateDeviceId } from '@/lib/supabase';
+import { InventoryItem, getOrCreateDeviceId } from '@/lib/supabase';
+import * as db from '@/lib/db';
 import { useRouter } from 'expo-router';
 
 export default function InventoryScreen() {
@@ -11,6 +21,7 @@ export default function InventoryScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [deviceId, setDeviceId] = useState<string>('');
+  const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -21,10 +32,11 @@ export default function InventoryScreen() {
     if (searchQuery.trim() === '') {
       setFilteredItems(items);
     } else {
-      const filtered = items.filter(item =>
-        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.qr_code.toLowerCase().includes(searchQuery.toLowerCase())
+      const filtered = items.filter(
+        (item) =>
+          item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.qr_code.toLowerCase().includes(searchQuery.toLowerCase()),
       );
       setFilteredItems(filtered);
     }
@@ -35,6 +47,12 @@ export default function InventoryScreen() {
       const id = await getOrCreateDeviceId();
       setDeviceId(id);
       await loadItems();
+      try {
+        const session = await db.getSession();
+        setIsAdmin(Boolean(session?.session?.user?.role === 'admin'));
+      } catch (e) {
+        setIsAdmin(false);
+      }
     } catch (error: any) {
       Alert.alert('Error', 'No se pudo inicializar la aplicación');
       setLoading(false);
@@ -43,15 +61,18 @@ export default function InventoryScreen() {
 
   async function loadItems() {
     try {
-      const { data, error } = await supabase
-        .from('inventory_items')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      setItems(data || []);
-      setFilteredItems(data || []);
+      if (!supabase) {
+        Alert.alert(
+          'Configuración requerida',
+          'Conecta Supabase para cargar el inventario.',
+        );
+        setItems([]);
+        setFilteredItems([]);
+        return;
+      }
+      const items = await db.loadItems();
+      setItems(items || []);
+      setFilteredItems(items || []);
     } catch (error: any) {
       Alert.alert('Error', error.message);
     } finally {
@@ -70,43 +91,49 @@ export default function InventoryScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              const { error } = await supabase
-                .from('inventory_items')
-                .delete()
-                .eq('id', id);
-
-              if (error) throw error;
-
+              await db.deleteItem(id);
               loadItems();
             } catch (error: any) {
               Alert.alert('Error', error.message);
             }
           },
         },
-      ]
+      ],
     );
   }
 
   const renderItem = ({ item }: { item: InventoryItem }) => (
-    <TouchableOpacity style={styles.card}>
+    <TouchableOpacity key={item.id} style={styles.card}>
       <View style={styles.cardContent}>
         {item.photo_url && (
           <Image source={{ uri: item.photo_url }} style={styles.itemImage} />
         )}
         <View style={styles.itemInfo}>
           <Text style={styles.itemName}>{item.name}</Text>
-          <Text style={styles.itemDetail}>QR: {item.qr_code}</Text>
+          <Text style={styles.itemDetail}>Código: {item.qr_code}</Text>
           {item.category && (
             <Text style={styles.itemDetail}>Categoría: {item.category}</Text>
           )}
           {item.location && (
             <Text style={styles.itemDetail}>Ubicación: {item.location}</Text>
           )}
+          {item.unidad_organica ? (
+            <Text style={styles.itemDetail}>
+              Unidad Orgánica: {item.unidad_organica}
+            </Text>
+          ) : null}
+          {item.cargo ? (
+            <Text style={styles.itemDetail}>Cargo: {item.cargo}</Text>
+          ) : null}
+          {item.usuario ? (
+            <Text style={styles.itemDetail}>Usuario: {item.usuario}</Text>
+          ) : null}
           <Text style={styles.itemDetail}>Cantidad: {item.quantity}</Text>
         </View>
         <TouchableOpacity
           style={styles.deleteButton}
-          onPress={() => deleteItem(item.id)}>
+          onPress={() => deleteItem(item.id)}
+        >
           <Trash2 size={20} color="#FF3B30" />
         </TouchableOpacity>
       </View>
@@ -124,12 +151,46 @@ export default function InventoryScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Mi Inventario</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Text style={styles.title}>Inventario</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {isAdmin && (
+              <TouchableOpacity onPress={() => router.push('/admin')}>
+                <Text
+                  style={{
+                    color: '#E53935',
+                    fontWeight: '600',
+                    marginRight: 12,
+                  }}
+                >
+                  Administración
+                </Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              onPress={async () => {
+                try {
+                  await db.signOut();
+                } catch (e: any) {
+                  Alert.alert('Error', e.message);
+                }
+              }}
+            >
+              <Text style={{ color: '#E53935', fontWeight: '600' }}>Salir</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
         <View style={styles.searchContainer}>
           <Search size={20} color="#8E8E93" style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Buscar por nombre, categoría o QR..."
+            placeholder="Buscar por beneficiario, categoría o código..."
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholderTextColor="#8E8E93"
@@ -140,17 +201,23 @@ export default function InventoryScreen() {
       {filteredItems.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>
-            {searchQuery ? 'No se encontraron resultados' : 'No hay items en el inventario'}
+            {searchQuery
+              ? 'No se encontraron resultados'
+              : 'No hay items en el inventario'}
           </Text>
           <Text style={styles.emptySubtext}>
-            {searchQuery ? 'Intenta con otro término de búsqueda' : 'Agrega tu primer item usando el botón "Agregar"'}
+            {searchQuery
+              ? 'Intenta con otro término de búsqueda'
+              : 'Registra tu primera donación usando el botón "Agregar"'}
           </Text>
         </View>
       ) : (
         <FlatList
           data={filteredItems}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item, index) =>
+            item.id ?? item.qr_code ?? String(index)
+          }
           contentContainerStyle={styles.listContent}
         />
       )}

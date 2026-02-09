@@ -1,10 +1,21 @@
 import { useState, useRef } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert, Image, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  Image,
+  Platform,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { Camera, X, Check } from 'lucide-react-native';
 import QRCode from 'react-native-qrcode-svg';
-import { supabase, getOrCreateDeviceId } from '@/lib/supabase';
+import { getOrCreateDeviceId } from '@/lib/supabase';
+import * as db from '@/lib/db';
 import { useRouter } from 'expo-router';
 
 export default function AddItemScreen() {
@@ -21,7 +32,11 @@ export default function AddItemScreen() {
   const cameraRef = useRef<CameraView>(null);
   const router = useRouter();
 
-  const qrCode = `INV-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  const [unidadOrganica, setUnidadOrganica] = useState('');
+  const [cargo, setCargo] = useState('');
+  const [usuarioField, setUsuarioField] = useState('');
+
+  const skuCode = `SKU-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
   async function takePicture() {
     if (cameraRef.current) {
@@ -48,20 +63,21 @@ export default function AddItemScreen() {
     try {
       const deviceId = await getOrCreateDeviceId();
 
-      const { error } = await supabase
-        .from('inventory_items')
-        .insert({
-          qr_code: qrCode,
-          name: name.trim(),
-          description: description.trim(),
-          category: category.trim(),
-          location: location.trim(),
-          quantity: parseInt(quantity) || 1,
-          photo_url: photoUri,
-          user_id: deviceId,
-        });
+      const newItem = await db.insertItem({
+        qr_code: skuCode,
+        name: name.trim(),
+        description: description.trim(),
+        category: category.trim(),
+        location: location.trim(),
+        unidad_organica: unidadOrganica.trim() || null,
+        cargo: cargo.trim() || null,
+        usuario: usuarioField.trim() || null,
+        quantity: parseInt(quantity) || 1,
+        photo_url: photoUri,
+        user_id: deviceId,
+      });
 
-      if (error) throw error;
+      if (!newItem) throw new Error('No se pudo guardar el item');
 
       Alert.alert('Éxito', 'Item agregado correctamente', [
         {
@@ -96,8 +112,13 @@ export default function AddItemScreen() {
       return (
         <SafeAreaView style={styles.container}>
           <View style={styles.permissionContainer}>
-            <Text style={styles.permissionText}>Necesitamos permiso para acceder a la cámara</Text>
-            <TouchableOpacity style={styles.permissionButton} onPress={requestPermission}>
+            <Text style={styles.permissionText}>
+              Necesitamos permiso para acceder a la cámara
+            </Text>
+            <TouchableOpacity
+              style={styles.permissionButton}
+              onPress={requestPermission}
+            >
               <Text style={styles.permissionButtonText}>Conceder Permiso</Text>
             </TouchableOpacity>
           </View>
@@ -109,10 +130,16 @@ export default function AddItemScreen() {
       <View style={styles.cameraContainer}>
         <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
           <View style={styles.cameraControls}>
-            <TouchableOpacity style={styles.cameraButton} onPress={() => setShowCamera(false)}>
+            <TouchableOpacity
+              style={styles.cameraButton}
+              onPress={() => setShowCamera(false)}
+            >
               <X size={32} color="#FFFFFF" />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.captureButton} onPress={takePicture}>
+            <TouchableOpacity
+              style={styles.captureButton}
+              onPress={takePicture}
+            >
               <View style={styles.captureButtonInner} />
             </TouchableOpacity>
             <View style={styles.cameraButton} />
@@ -126,34 +153,40 @@ export default function AddItemScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
-          <Text style={styles.title}>Agregar Item</Text>
+          <Text style={styles.title}>Registrar Inventario</Text>
         </View>
 
         <View style={styles.qrContainer}>
-          <Text style={styles.sectionTitle}>Código QR generado:</Text>
+          <Text style={styles.sectionTitle}>
+            Código de Inventario generado:
+          </Text>
           <View style={styles.qrCode}>
-            <QRCode value={qrCode} size={150} />
+            <QRCode value={skuCode} size={150} />
           </View>
-          <Text style={styles.qrText}>{qrCode}</Text>
+          <Text style={styles.qrText}>{skuCode}</Text>
         </View>
 
         <View style={styles.photoSection}>
-          <Text style={styles.sectionTitle}>Foto del Item:</Text>
+          <Text style={styles.sectionTitle}>Foto del Donativo:</Text>
           {photoUri ? (
             <View style={styles.photoPreviewContainer}>
               <Image source={{ uri: photoUri }} style={styles.photoPreview} />
               <TouchableOpacity
                 style={styles.removePhotoButton}
-                onPress={() => setPhotoUri(null)}>
+                onPress={() => setPhotoUri(null)}
+              >
                 <X size={20} color="#FFFFFF" />
               </TouchableOpacity>
             </View>
           ) : (
             <TouchableOpacity
               style={styles.cameraButtonLarge}
-              onPress={() => setShowCamera(true)}>
-              <Camera size={32} color="#007AFF" />
-              <Text style={styles.cameraButtonText}>Tomar Foto</Text>
+              onPress={() => setShowCamera(true)}
+            >
+              <Camera size={32} color="#E53935" />
+              <Text style={styles.cameraButtonText}>
+                Tomar foto del donativo
+              </Text>
             </TouchableOpacity>
           )}
         </View>
@@ -164,7 +197,7 @@ export default function AddItemScreen() {
             style={styles.input}
             value={name}
             onChangeText={setName}
-            placeholder="Nombre del item"
+            placeholder="Nombre del artículo donado"
             placeholderTextColor="#8E8E93"
           />
 
@@ -184,7 +217,7 @@ export default function AddItemScreen() {
             style={styles.input}
             value={category}
             onChangeText={setCategory}
-            placeholder="Ej: Electrónica, Herramientas, etc."
+            placeholder="Ej: Ropa, Alimentos, Juguetes"
             placeholderTextColor="#8E8E93"
           />
 
@@ -194,6 +227,33 @@ export default function AddItemScreen() {
             value={location}
             onChangeText={setLocation}
             placeholder="Ej: Almacén A, Estante 3"
+            placeholderTextColor="#8E8E93"
+          />
+
+          <Text style={styles.label}>Unidad Orgánica</Text>
+          <TextInput
+            style={styles.input}
+            value={unidadOrganica}
+            onChangeText={setUnidadOrganica}
+            placeholder="Ej: Dirección de Proyectos"
+            placeholderTextColor="#8E8E93"
+          />
+
+          <Text style={styles.label}>Cargo</Text>
+          <TextInput
+            style={styles.input}
+            value={cargo}
+            onChangeText={setCargo}
+            placeholder="Ej: Coordinador"
+            placeholderTextColor="#8E8E93"
+          />
+
+          <Text style={styles.label}>Usuario</Text>
+          <TextInput
+            style={styles.input}
+            value={usuarioField}
+            onChangeText={setUsuarioField}
+            placeholder="Nombre del usuario que registra"
             placeholderTextColor="#8E8E93"
           />
 
@@ -211,10 +271,11 @@ export default function AddItemScreen() {
         <TouchableOpacity
           style={[styles.saveButton, loading && styles.saveButtonDisabled]}
           onPress={handleSave}
-          disabled={loading}>
+          disabled={loading}
+        >
           <Check size={20} color="#FFFFFF" />
           <Text style={styles.saveButtonText}>
-            {loading ? 'Guardando...' : 'Guardar Item'}
+            {loading ? 'Guardando...' : 'Registrar Inventario'}
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -299,12 +360,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#007AFF',
+    borderColor: '#E53935',
     borderStyle: 'dashed',
   },
   cameraButtonText: {
     fontSize: 16,
-    color: '#007AFF',
+    color: '#E53935',
     marginTop: 8,
     fontWeight: '600',
   },
@@ -333,7 +394,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   saveButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#E53935',
     marginHorizontal: 16,
     marginTop: 24,
     padding: 16,
@@ -385,7 +446,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#E53935',
   },
   permissionContainer: {
     flex: 1,
@@ -400,7 +461,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   permissionButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#E53935',
     paddingHorizontal: 32,
     paddingVertical: 16,
     borderRadius: 12,
